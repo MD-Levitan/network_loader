@@ -63,6 +63,7 @@ void icmp_loader(packet_t *packet)
     addr_ping.sin_family = AF_INET;
     addr_ping.sin_port = 0;
     memcpy((char *)&addr_ping.sin_addr, packet->ip, 4);
+    
 
     sd = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (sd < 0)

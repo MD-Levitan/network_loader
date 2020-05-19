@@ -1,4 +1,13 @@
 #include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <ifaddrs.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <linux/if.h>
+#include <arpa/inet.h>
 
 #include "packet.h"
 
@@ -65,4 +74,49 @@ void load(packet_t *packet)
     {
         private->loader(packet);
     }
+    else
+    {
+        fprintf(stderr, "incorrect packet\n");
+    }
 }
+
+void print_types(FILE *fd)
+{
+    for (uint8_t i = 0; i < sizeof(private_packets) / sizeof(private_packets[0]); ++i)
+    {
+        fprintf(fd, "\t%s\n", private_packets[i].name);
+    }
+    return NULL;
+}
+
+void print_interfaces(FILE *fd)
+{
+    struct ifaddrs *ifaddr, *ifa;
+    int error;
+    
+    if (fd == NULL)
+    {
+        _exit(1);
+    }
+
+    if (getifaddrs(&ifaddr) == -1) {
+        error = errno;
+        fprintf(fd, "error in getifaddrs: %s", strerror(error));
+        return;
+    }
+
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+        char addres[INET6_ADDRSTRLEN];
+
+        if (ifa->ifa_addr != NULL && ifa->ifa_addr->sa_family & AF_INET & AF_INET6)
+        {
+            inet_ntop(ifa->ifa_addr->sa_family, ifa->ifa_addr->sa_family == AF_INET ? 
+                                                ifa->ifa_addr->sa_data + 2 : ifa->ifa_addr->sa_data + 6,
+                                                addres, INET6_ADDRSTRLEN);
+            fprintf(fd, "\t%s: %s\n", ifa->ifa_name, addres);
+        }
+    }
+
+  freeifaddrs(ifaddr);
+  return;
+} 

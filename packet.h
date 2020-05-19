@@ -32,7 +32,34 @@ struct packet_t
  */
 void load(packet_t *packet);
 
-/* Utils */
+/**
+ * 
+ *  Utils 
+ *
+ */
+
+/**
+ * Parse string to find packet's type
+ * 
+ * @param str               input string
+ * @return packet_type_t    packet's type
+ */
 packet_type_t parse_string(const char *str);
+
+
+/**
+ * Print all packet's types
+ * 
+ * @param fd                pointer to output
+ */
+void print_types(FILE *fd);
+
+
+/**
+ * Print all interfaces with IPV4 & IPV6
+ * 
+ * @param fd                pointer to output
+ */
+void print_interfaces(FILE *fd);
 
 #endif //PACKET_H_
